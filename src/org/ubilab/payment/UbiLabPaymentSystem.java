@@ -1,6 +1,9 @@
 package org.ubilab.payment;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.FileNotFoundException;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -11,6 +14,7 @@ import org.ubilab.payment.card.*;
  * @author atsushi-o
  */
 public class UbiLabPaymentSystem implements Runnable, CardAvailableEventListener {
+    private Properties settings;
     private CardThread card;
     private String loginCardID;
 
@@ -25,7 +29,38 @@ public class UbiLabPaymentSystem implements Runnable, CardAvailableEventListener
      * コンストラクタ
      */
     public UbiLabPaymentSystem() {
+        loginCardID = "";
+
+        loadSettings();
+        init();
         //new mainWindow().setVisible(true);
+    }
+
+    /**
+     * 設定読み込み
+     */
+    private void loadSettings() {
+        settings = new Properties();
+        try {
+            FileInputStream in = new FileInputStream("config.xml");
+            settings.loadFromXML(in);
+        } catch (IOException ex) {
+            if (ex.getClass() == FileNotFoundException.class) {
+                LOG.log(Level.INFO, "Setting file not found.", ex);
+            } else {
+                LOG.log(Level.WARNING, "Setting load error.", ex);
+            }
+
+            // Set default settings
+            settings.setProperty("DBHost", "127.0.0.1");
+            settings.setProperty("DBUser", "ubilab_payment");
+            settings.setProperty("DBPass", "ubilab_payment");
+            settings.setProperty("twitterOAuthToken", "");
+            settings.setProperty("twitterOAuthSecret", "");
+        }
+    }
+
+    private void init() {
         try {
             card = new CardThread();
             card.addListener(this);
@@ -33,8 +68,6 @@ public class UbiLabPaymentSystem implements Runnable, CardAvailableEventListener
             LOG.log(Level.SEVERE, "カードリーダの初期化に失敗しました", ex);
             System.exit(1);
         }
-
-        loginCardID = "";
     }
 
     /**
@@ -66,6 +99,7 @@ public class UbiLabPaymentSystem implements Runnable, CardAvailableEventListener
                     LOG.log(Level.SEVERE, null, ex);
                 }
                 card.resume();
+                loginCardID = "";
             }
             try {Thread.sleep(1000);}catch(Exception e) {}
         }
