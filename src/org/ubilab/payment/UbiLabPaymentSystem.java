@@ -15,6 +15,7 @@ import org.ubilab.payment.card.*;
  */
 public class UbiLabPaymentSystem implements Runnable, CardAvailableEventListener {
     private Properties settings;
+    private mainWindow window;
     private CardThread card;
     private String loginCardID;
 
@@ -33,7 +34,8 @@ public class UbiLabPaymentSystem implements Runnable, CardAvailableEventListener
 
         loadSettings();
         init();
-        //new mainWindow().setVisible(true);
+        window = new mainWindow();
+        window.setVisible(true);
     }
 
     /**
@@ -110,6 +112,7 @@ public class UbiLabPaymentSystem implements Runnable, CardAvailableEventListener
     public void cardAvailable(CardAvailableEvent ev) {
         LOG.log(Level.INFO, "Card Available: {0}", ev.getUid());
         loginCardID = ev.getUid();
+        window.setSkin("org.ubilab.payment.ui.skin.BlackSpiral");
     }
 
 

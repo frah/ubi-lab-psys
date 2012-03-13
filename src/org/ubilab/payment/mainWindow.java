@@ -10,14 +10,26 @@
  */
 package org.ubilab.payment;
 
+import java.util.logging.Logger;
+import java.util.logging.Level;
+import org.ubilab.payment.ui.skin.Skin;
+
 /**
  *
  * @author atsushi-o
  */
 public class mainWindow extends javax.swing.JFrame {
+    private Skin skin;
+
+    private static final Logger LOG;
+    static {
+        LOG = Logger.getLogger(mainWindow.class.getName());
+    }
 
     /** Creates new form mainWindow */
     public mainWindow() {
+        //skin = new org.ubilab.payment.ui.skin.DefaultSkin();
+        skin = new org.ubilab.payment.ui.skin.BlackSpiral();
         initComponents();
     }
 
@@ -30,24 +42,64 @@ public class mainWindow extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        backgroundPanel = skin.getBackground(this.getWidth(), this.getHeight());
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setAlwaysOnTop(true);
         setExtendedState(java.awt.Frame.MAXIMIZED_BOTH);
+        setName("mainFrame"); // NOI18N
+        setResizable(false);
         setUndecorated(true);
+
+        backgroundPanel.setOpaque(false);
+        backgroundPanel.setPreferredSize(getPreferredSize());
+
+        javax.swing.GroupLayout backgroundPanelLayout = new javax.swing.GroupLayout(backgroundPanel);
+        backgroundPanel.setLayout(backgroundPanelLayout);
+        backgroundPanelLayout.setHorizontalGroup(
+            backgroundPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 1048, Short.MAX_VALUE)
+        );
+        backgroundPanelLayout.setVerticalGroup(
+            backgroundPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 788, Short.MAX_VALUE)
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addComponent(backgroundPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 1048, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addComponent(backgroundPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 788, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    public void setSkin(String skinFQCN) {
+        try {
+            Class<Skin> clazz = (Class<Skin>)Class.forName(skinFQCN);
+            setSkin(clazz.newInstance());
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | ClassCastException ex) {
+            LOG.log(Level.WARNING, "Failed to set the specified skin. Use the default skin.", ex);
+            this.skin = new org.ubilab.payment.ui.skin.DefaultSkin();
+        }
+    }
+    public void setSkin(Skin skin) {
+        LOG.log(Level.INFO, "Set skin to {0}", skin.getClass().getName());
+        this.skin = skin;
+        this.repaint();
+    }
+
+    @Override
+    public void repaint() {
+        backgroundPanel = skin.getBackground(this.getWidth(), this.getHeight());
+        backgroundPanel.setOpaque(true);
+        super.repaint();
+    }
 
     /**
      * @param args the command line arguments
@@ -85,5 +137,6 @@ public class mainWindow extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel backgroundPanel;
     // End of variables declaration//GEN-END:variables
 }
