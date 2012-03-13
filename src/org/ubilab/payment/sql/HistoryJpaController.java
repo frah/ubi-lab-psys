@@ -39,19 +39,19 @@ public class HistoryJpaController implements Serializable {
                 itemId = em.getReference(itemId.getClass(), itemId.getId());
                 history.setItemId(itemId);
             }
-            Users userId = history.getUserId();
-            if (userId != null) {
-                userId = em.getReference(userId.getClass(), userId.getId());
-                history.setUserId(userId);
+            Users uid = history.getUid();
+            if (uid != null) {
+                uid = em.getReference(uid.getClass(), uid.getId());
+                history.setUid(uid);
             }
             em.persist(history);
             if (itemId != null) {
                 itemId.getHistoryCollection().add(history);
                 itemId = em.merge(itemId);
             }
-            if (userId != null) {
-                userId.getHistoryCollection().add(history);
-                userId = em.merge(userId);
+            if (uid != null) {
+                uid.getHistoryCollection().add(history);
+                uid = em.merge(uid);
             }
             em.getTransaction().commit();
         } finally {
@@ -69,15 +69,15 @@ public class HistoryJpaController implements Serializable {
             History persistentHistory = em.find(History.class, history.getId());
             Items itemIdOld = persistentHistory.getItemId();
             Items itemIdNew = history.getItemId();
-            Users userIdOld = persistentHistory.getUserId();
-            Users userIdNew = history.getUserId();
+            Users uidOld = persistentHistory.getUid();
+            Users uidNew = history.getUid();
             if (itemIdNew != null) {
                 itemIdNew = em.getReference(itemIdNew.getClass(), itemIdNew.getId());
                 history.setItemId(itemIdNew);
             }
-            if (userIdNew != null) {
-                userIdNew = em.getReference(userIdNew.getClass(), userIdNew.getId());
-                history.setUserId(userIdNew);
+            if (uidNew != null) {
+                uidNew = em.getReference(uidNew.getClass(), uidNew.getId());
+                history.setUid(uidNew);
             }
             history = em.merge(history);
             if (itemIdOld != null && !itemIdOld.equals(itemIdNew)) {
@@ -88,13 +88,13 @@ public class HistoryJpaController implements Serializable {
                 itemIdNew.getHistoryCollection().add(history);
                 itemIdNew = em.merge(itemIdNew);
             }
-            if (userIdOld != null && !userIdOld.equals(userIdNew)) {
-                userIdOld.getHistoryCollection().remove(history);
-                userIdOld = em.merge(userIdOld);
+            if (uidOld != null && !uidOld.equals(uidNew)) {
+                uidOld.getHistoryCollection().remove(history);
+                uidOld = em.merge(uidOld);
             }
-            if (userIdNew != null && !userIdNew.equals(userIdOld)) {
-                userIdNew.getHistoryCollection().add(history);
-                userIdNew = em.merge(userIdNew);
+            if (uidNew != null && !uidNew.equals(uidOld)) {
+                uidNew.getHistoryCollection().add(history);
+                uidNew = em.merge(uidNew);
             }
             em.getTransaction().commit();
         } catch (Exception ex) {
@@ -130,10 +130,10 @@ public class HistoryJpaController implements Serializable {
                 itemId.getHistoryCollection().remove(history);
                 itemId = em.merge(itemId);
             }
-            Users userId = history.getUserId();
-            if (userId != null) {
-                userId.getHistoryCollection().remove(history);
-                userId = em.merge(userId);
+            Users uid = history.getUid();
+            if (uid != null) {
+                uid.getHistoryCollection().remove(history);
+                uid = em.merge(uid);
             }
             em.remove(history);
             em.getTransaction().commit();

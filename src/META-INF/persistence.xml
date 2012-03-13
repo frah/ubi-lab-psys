@@ -5,6 +5,7 @@
     <class>org.ubilab.payment.sql.Users</class>
     <class>org.ubilab.payment.sql.Items</class>
     <class>org.ubilab.payment.sql.History</class>
+    <class>org.ubilab.payment.sql.Purse</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/ubilab_pos"/>
       <property name="javax.persistence.jdbc.password" value="ubilab_admin"/>

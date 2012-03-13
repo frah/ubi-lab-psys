@@ -17,6 +17,7 @@ import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -28,16 +29,15 @@ import javax.xml.bind.annotation.XmlTransient;
  */
 @Entity
 @Table(name = "users", catalog = "ubilab_pos", schema = "", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"IDm", "uname", "mail"})})
+    @UniqueConstraint(columnNames = {"IDm", "mail"})})
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Users.findAll", query = "SELECT u FROM Users u"),
     @NamedQuery(name = "Users.findById", query = "SELECT u FROM Users u WHERE u.id = :id"),
     @NamedQuery(name = "Users.findByIDm", query = "SELECT u FROM Users u WHERE u.iDm = :iDm"),
     @NamedQuery(name = "Users.findByName", query = "SELECT u FROM Users u WHERE u.name = :name"),
-    @NamedQuery(name = "Users.findByUname", query = "SELECT u FROM Users u WHERE u.uname = :uname"),
     @NamedQuery(name = "Users.findByMail", query = "SELECT u FROM Users u WHERE u.mail = :mail"),
-    @NamedQuery(name = "Users.findByCredit", query = "SELECT u FROM Users u WHERE u.credit = :credit"),
+    @NamedQuery(name = "Users.findByTwitter", query = "SELECT u FROM Users u WHERE u.twitter = :twitter"),
     @NamedQuery(name = "Users.findBySkinFqcn", query = "SELECT u FROM Users u WHERE u.skinFqcn = :skinFqcn"),
     @NamedQuery(name = "Users.findByFlags", query = "SELECT u FROM Users u WHERE u.flags = :flags")})
 public class Users implements Serializable {
@@ -54,26 +54,24 @@ public class Users implements Serializable {
     @Column(name = "name", nullable = false, length = 255)
     private String name;
     @Basic(optional = false)
-    @Column(name = "uname", nullable = false, length = 255)
-    private String uname;
+    @Column(name = "mail", nullable = false, length = 255)
+    private String mail;
     @Basic(optional = false)
     @Lob
     @Column(name = "password", nullable = false)
     private byte[] password;
-    @Basic(optional = false)
-    @Column(name = "mail", nullable = false, length = 255)
-    private String mail;
-    @Basic(optional = false)
-    @Column(name = "credit", nullable = false)
-    private int credit;
+    @Column(name = "twitter", length = 255)
+    private String twitter;
     @Basic(optional = false)
     @Column(name = "skin_fqcn", nullable = false, length = 255)
     private String skinFqcn;
     @Basic(optional = false)
     @Column(name = "flags", nullable = false)
     private boolean flags;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "uid")
     private Collection<History> historyCollection;
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "users")
+    private Purse purse;
 
     public Users() {
     }
@@ -82,14 +80,12 @@ public class Users implements Serializable {
         this.id = id;
     }
 
-    public Users(Integer id, String iDm, String name, String uname, byte[] password, String mail, int credit, String skinFqcn, boolean flags) {
+    public Users(Integer id, String iDm, String name, String mail, byte[] password, String skinFqcn, boolean flags) {
         this.id = id;
         this.iDm = iDm;
         this.name = name;
-        this.uname = uname;
-        this.password = password;
         this.mail = mail;
-        this.credit = credit;
+        this.password = password;
         this.skinFqcn = skinFqcn;
         this.flags = flags;
     }
@@ -118,12 +114,12 @@ public class Users implements Serializable {
         this.name = name;
     }
 
-    public String getUname() {
-        return uname;
+    public String getMail() {
+        return mail;
     }
 
-    public void setUname(String uname) {
-        this.uname = uname;
+    public void setMail(String mail) {
+        this.mail = mail;
     }
 
     public byte[] getPassword() {
@@ -134,20 +130,12 @@ public class Users implements Serializable {
         this.password = password;
     }
 
-    public String getMail() {
-        return mail;
+    public String getTwitter() {
+        return twitter;
     }
 
-    public void setMail(String mail) {
-        this.mail = mail;
-    }
-
-    public int getCredit() {
-        return credit;
-    }
-
-    public void setCredit(int credit) {
-        this.credit = credit;
+    public void setTwitter(String twitter) {
+        this.twitter = twitter;
     }
 
     public String getSkinFqcn() {
@@ -173,6 +161,14 @@ public class Users implements Serializable {
 
     public void setHistoryCollection(Collection<History> historyCollection) {
         this.historyCollection = historyCollection;
+    }
+
+    public Purse getPurse() {
+        return purse;
+    }
+
+    public void setPurse(Purse purse) {
+        this.purse = purse;
     }
 
     @Override

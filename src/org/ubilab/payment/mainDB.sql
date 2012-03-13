@@ -7,17 +7,25 @@ CREATE TABLE `users` (
     `id` integer unsigned NOT NULL AUTO_INCREMENT,
     `IDm` varchar(16) NOT NULL,
     `name` varchar(255) NOT NULL,
-    `uname` varchar(255) NOT NULL,
-    `password` blob(32) NOT NULL,
     `mail` varchar(255) NOT NULL,
-    `credit` integer NOT NULL DEFAULT '0',
-    `skin_fqcn` varchar(255) NOT NULL DEFAULT 'org.ubilab.payment.skin.DefaultSkin',
+    `password` blob(32) NOT NULL,
+    `twitter` varchar(255),
+    `skin_fqcn` varchar(255) NOT NULL DEFAULT 'org.ubilab.payment.ui.skin.DefaultSkin',
     `flags` bit(5) NOT NULL DEFAULT b'00000',
     PRIMARY KEY (`id`),
     KEY `IDm` (`IDm`),
-    KEY `UserName` (`uname`),
+    KEY `mail` (`mail`),
+    KEY `twitter` (`twitter`),
     KEY `Flags` (`flags`),
-    UNIQUE `unique` (`IDm`, `uname`, `mail`)
+    UNIQUE `unique` (`IDm`, `mail`)
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8;
+
+DROP TABLE IF EXISTS `purse`;
+CREATE TABLE `purse` (
+    `uid` integer unsigned NOT NULL,
+    `remainder` integer NOT NULL DEFAULT '0',
+    PRIMARY KEY (`uid`),
+    FOREIGN KEY (`uid`) REFERENCES users (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARACTER SET utf8;
 
 DROP TABLE IF EXISTS `items`;
@@ -35,22 +43,28 @@ CREATE TABLE `items` (
 DROP TABLE IF EXISTS `history`;
 CREATE TABLE `history` (
     `id` integer unsigned NOT NULL AUTO_INCREMENT,
-    `user_id` integer unsigned NOT NULL,
+    `uid` integer unsigned NOT NULL,
     `item_id` integer unsigned NOT NULL,
     `num` integer NOT NULL DEFAULT '1',
     `purchase_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`),
-    KEY (`user_id`, `item_id`, `purchase_date`),
-    FOREIGN KEY (`user_id`) REFERENCES users (`id`) ON DELETE CASCADE,
+    KEY (`uid`, `item_id`, `purchase_date`),
+    FOREIGN KEY (`uid`) REFERENCES users (`id`) ON DELETE CASCADE,
     FOREIGN KEY (`item_id`) REFERENCES items (`id`) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARACTER SET utf8;
 
 
 DELIMITER |
 
+CREATE TRIGGER new_user AFTER INSERT ON `users`
+    FOR EACH ROW BEGIN
+        INSERT INTO purse (uid) VALUES (NEW.id);
+    END;
+|
+
 CREATE TRIGGER buy AFTER INSERT ON `history`
     FOR EACH ROW BEGIN
-        UPDATE users SET credit = credit - (SELECT price FROM items WHERE id=NEW.item_id) * NEW.num WHERE id=NEW.user_id;
+        UPDATE users SET credit = credit - (SELECT price FROM items WHERE id=NEW.item_id) * NEW.num WHERE id=NEW.uid;
         UPDATE items SET num = num - NEW.num WHERE id=NEW.item_id;
     END;
 |

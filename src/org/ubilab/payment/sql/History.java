@@ -50,9 +50,9 @@ public class History implements Serializable {
     @JoinColumn(name = "item_id", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
     private Items itemId;
-    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "uid", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
-    private Users userId;
+    private Users uid;
 
     public History() {
     }
@@ -99,12 +99,12 @@ public class History implements Serializable {
         this.itemId = itemId;
     }
 
-    public Users getUserId() {
-        return userId;
+    public Users getUid() {
+        return uid;
     }
 
-    public void setUserId(Users userId) {
-        this.userId = userId;
+    public void setUid(Users uid) {
+        this.uid = uid;
     }
 
     @Override
