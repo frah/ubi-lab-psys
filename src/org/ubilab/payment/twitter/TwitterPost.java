@@ -19,12 +19,8 @@ import twitter4j.auth.AccessToken;
  * @author atsushi-o
  */
 public class TwitterPost {
-    private static final String ConsumerKey;
-    private static final String ConsumerSecret;
     private static final Logger LOG;
     static {
-        ConsumerKey = "aDBpMY9rguwP1Yik1jp9Q";
-        ConsumerSecret = "5wNWtWxw5n9eU6E8S3z9b8ivVBDh7cra9tnKh79cu3o";
         LOG = Logger.getLogger(TwitterPost.class.getName());
     }
 
@@ -36,8 +32,7 @@ public class TwitterPost {
      */
     public static String[] auth() {
         String[] ret = null;
-        Twitter twitter = TwitterFactory.getSingleton();
-        twitter.setOAuthConsumer(ConsumerKey, ConsumerSecret);
+        Twitter twitter = new TwitterFactory().getInstance();
         AccessToken accessToken = null;
         try {
             RequestToken requestToken = twitter.getOAuthRequestToken();
