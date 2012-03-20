@@ -17,7 +17,6 @@ import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -39,7 +38,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Users.findByMail", query = "SELECT u FROM Users u WHERE u.mail = :mail"),
     @NamedQuery(name = "Users.findByTwitter", query = "SELECT u FROM Users u WHERE u.twitter = :twitter"),
     @NamedQuery(name = "Users.findBySkinFqcn", query = "SELECT u FROM Users u WHERE u.skinFqcn = :skinFqcn"),
-    @NamedQuery(name = "Users.findByFlags", query = "SELECT u FROM Users u WHERE u.flags = :flags")})
+    @NamedQuery(name = "Users.findByFlags", query = "SELECT u FROM Users u WHERE u.flags = :flags"),
+    @NamedQuery(name = "Users.findByRemainder", query = "SELECT u FROM Users u WHERE u.remainder = :remainder")})
 public class Users implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -68,10 +68,11 @@ public class Users implements Serializable {
     @Basic(optional = false)
     @Column(name = "flags", nullable = false)
     private boolean flags;
+    @Basic(optional = false)
+    @Column(name = "remainder", nullable = false)
+    private int remainder;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "uid")
     private Collection<History> historyCollection;
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "users")
-    private Purse purse;
 
     public Users() {
     }
@@ -80,7 +81,7 @@ public class Users implements Serializable {
         this.id = id;
     }
 
-    public Users(Integer id, String iDm, String name, String mail, byte[] password, String skinFqcn, boolean flags) {
+    public Users(Integer id, String iDm, String name, String mail, byte[] password, String skinFqcn, boolean flags, int remainder) {
         this.id = id;
         this.iDm = iDm;
         this.name = name;
@@ -88,6 +89,7 @@ public class Users implements Serializable {
         this.password = password;
         this.skinFqcn = skinFqcn;
         this.flags = flags;
+        this.remainder = remainder;
     }
 
     public Integer getId() {
@@ -154,6 +156,14 @@ public class Users implements Serializable {
         this.flags = flags;
     }
 
+    public int getRemainder() {
+        return remainder;
+    }
+
+    public void setRemainder(int remainder) {
+        this.remainder = remainder;
+    }
+
     @XmlTransient
     public Collection<History> getHistoryCollection() {
         return historyCollection;
@@ -161,14 +171,6 @@ public class Users implements Serializable {
 
     public void setHistoryCollection(Collection<History> historyCollection) {
         this.historyCollection = historyCollection;
-    }
-
-    public Purse getPurse() {
-        return purse;
-    }
-
-    public void setPurse(Purse purse) {
-        this.purse = purse;
     }
 
     @Override

@@ -12,20 +12,13 @@ CREATE TABLE `users` (
     `twitter` varchar(255),
     `skin_fqcn` varchar(255) NOT NULL DEFAULT 'org.ubilab.payment.ui.skin.DefaultSkin',
     `flags` bit(5) NOT NULL DEFAULT b'00000',
+    `remainder` integer NOT NULL DEFAULT '0',
     PRIMARY KEY (`id`),
     KEY `IDm` (`IDm`),
     KEY `mail` (`mail`),
     KEY `twitter` (`twitter`),
     KEY `Flags` (`flags`),
     UNIQUE `unique` (`IDm`, `mail`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8;
-
-DROP TABLE IF EXISTS `purse`;
-CREATE TABLE `purse` (
-    `uid` integer unsigned NOT NULL,
-    `remainder` integer NOT NULL DEFAULT '0',
-    PRIMARY KEY (`uid`),
-    FOREIGN KEY (`uid`) REFERENCES users (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARACTER SET utf8;
 
 DROP TABLE IF EXISTS `items`;
@@ -56,15 +49,9 @@ CREATE TABLE `history` (
 
 DELIMITER |
 
-CREATE TRIGGER new_user AFTER INSERT ON `users`
-    FOR EACH ROW BEGIN
-        INSERT INTO purse (uid) VALUES (NEW.id);
-    END;
-|
-
 CREATE TRIGGER buy AFTER INSERT ON `history`
     FOR EACH ROW BEGIN
-        UPDATE users SET credit = credit - (SELECT price FROM items WHERE id=NEW.item_id) * NEW.num WHERE id=NEW.uid;
+        UPDATE users SET remainder = remainder - (SELECT price FROM items WHERE id=NEW.item_id) * NEW.num WHERE id=NEW.uid;
         UPDATE items SET num = num - NEW.num WHERE id=NEW.item_id;
     END;
 |

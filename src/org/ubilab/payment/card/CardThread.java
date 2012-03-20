@@ -97,24 +97,17 @@ public class CardThread implements Runnable {
         cardThread = null;
     }
 
+    /**
+     * 定期的にカードID読み取りを試行し，成功時はスレッドを一時停止してCardThread#resume()が呼ばれるまで待機する
+     */
     @Override
     public void run() {
         Thread thisThread = Thread.currentThread();
         while(cardThread == thisThread) {
-            try {
-                Thread.currentThread().sleep(1000);
-
-                if (suspendFlag) {
-                    LOG.info("Thread suspended.");
-                    synchronized(this) {
-                        while (suspendFlag) wait();
-                    }
-                }
-            } catch (InterruptedException ex) {}
-
             Card card = null;
             try {
                 if (terminal.waitForCardPresent(WAIT_TIME) == true) {
+                    // カード検出時はカードID読み取りを試行
                     LOG.fine("Card available.");
                     card = terminal.connect("T=1");
                     CardChannel channel = card.getBasicChannel();
@@ -146,6 +139,17 @@ public class CardThread implements Runnable {
                     if (card != null) card.disconnect(true);
                 } catch (CardException ex) {}
             }
+
+            try {
+                if (suspendFlag) {
+                    LOG.info("Thread suspended.");
+                    synchronized(this) {
+                        while (suspendFlag) wait();
+                    }
+                } else {
+                    thisThread.sleep(WAIT_TIME);
+                }
+            } catch (InterruptedException ex) {}
         }
     }
 }
