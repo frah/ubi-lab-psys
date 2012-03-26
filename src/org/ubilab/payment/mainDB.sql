@@ -148,14 +148,23 @@ INSERT INTO `items` (`id`, `JAN`, `name`) VALUES (0, '0000000000000', '入金');
 
 
 CREATE USER 'ubilab_admin'@'localhost' IDENTIFIED BY 'ubilab_admin';
-CREATE USER 'ubilab_payment'@'163.221.%' IDENTIFIED BY 'ubilab_payment';
 GRANT SELECT, INSERT, UPDATE, DELETE ON ubilab_pos.users TO 'ubilab_admin'@'localhost';
 GRANT SELECT, INSERT, UPDATE, DELETE ON ubilab_pos.items TO 'ubilab_admin'@'localhost';
 GRANT SELECT ON ubilab_pos.receipt TO 'ubilab_admin'@'localhost';
 GRANT SELECT ON ubilab_pos.buy_history TO 'ubilab_admin'@'localhost';
 GRANT SELECT, INSERT ON ubilab_pos.fund_history TO 'ubilab_admin'@'localhost';
+
+CREATE USER 'ubilab_webuser'@'localhost' IDENTIFIED BY 'ubilab_webuser';
+GRANT SELECT, UPDATE ON ubilab_pos.users TO 'ubilab_webuser'@'localhost';
+GRANT SELECT ON ubilab_pos.items TO 'ubilab_webuser'@'localhost';
+GRANT SELECT ON ubilab_pos.receipt TO 'ubilab_webuser'@'localhost';
+GRANT SELECT ON ubilab_pos.buy_history TO 'ubilab_webuser'@'localhost';
+GRANT SELECT ON ubilab_pos.fund_history TO 'ubilab_webuser'@'localhost';
+
+CREATE USER 'ubilab_payment'@'163.221.%' IDENTIFIED BY 'ubilab_payment';
 GRANT SELECT ON ubilab_pos.users TO 'ubilab_payment'@'163.221.%';
 GRANT SELECT ON ubilab_pos.items TO 'ubilab_payment'@'163.221.%';
+GRANT INSERT ON ubilab_pos.receipt TO 'ubilab_payment'@'163.221.%';
 GRANT INSERT ON ubilab_pos.buy_history TO 'ubilab_payment'@'163.221.%';
 
 
@@ -169,9 +178,9 @@ GRANT INSERT ON ubilab_pos.buy_history TO 'ubilab_payment'@'163.221.%';
 5. トランザクション終了
 START TRANSACTION;
 INSERT INTO receipt (uid, amount) VALUES (1, 530);
-SELECT LAST_INSERT_ID();
-INSERT INTO buy_history (item_id, num) VALUES (1, 1);
-INSERT INTO buy_history (item_id, num) VALUES (2, 1);
+id = SELECT LAST_INSERT_ID();
+INSERT INTO buy_history (item_id, num, receipt_id) VALUES (1, 1, id);
+INSERT INTO buy_history (item_id, num, receipt_id) VALUES (2, 1, id);
 COMMIT;
 
 ・入金
