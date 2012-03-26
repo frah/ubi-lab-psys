@@ -13,7 +13,7 @@ import org.ubilab.payment.card.*;
  * Ubi-lab会計システムメインクラス
  * @author atsushi-o
  */
-public class UbiLabPaymentSystem implements Runnable, CardAvailableEventListener {
+public class UbiLabPaymentSystem implements Runnable, CardAvailableEventListener, QuitEventListener {
     private Properties settings;
     private mainWindow window;
     private CardThread card;
@@ -34,8 +34,6 @@ public class UbiLabPaymentSystem implements Runnable, CardAvailableEventListener
 
         loadSettings();
         init();
-        window = new mainWindow();
-        window.setVisible(true);
     }
 
     /**
@@ -70,6 +68,10 @@ public class UbiLabPaymentSystem implements Runnable, CardAvailableEventListener
             LOG.log(Level.SEVERE, "カードリーダの初期化に失敗しました", ex);
             System.exit(1);
         }
+
+        window = new mainWindow();
+        window.setQuitEventListener(this);
+        window.setVisible(true);
     }
 
     /**
@@ -91,6 +93,12 @@ public class UbiLabPaymentSystem implements Runnable, CardAvailableEventListener
     }
 
     @Override
+    public void quit() {
+        stop();
+        window.dispose();
+    }
+
+    @Override
     public void run() {
         Thread thisThread = Thread.currentThread();
         while(running == thisThread) {
@@ -106,6 +114,7 @@ public class UbiLabPaymentSystem implements Runnable, CardAvailableEventListener
             try {Thread.sleep(1000);}catch(Exception e) {}
         }
 
+        System.exit(0);
     }
 
     @Override

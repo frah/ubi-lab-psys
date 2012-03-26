@@ -1,6 +1,6 @@
 <?xml version="1.1" encoding="UTF-8" ?>
 
-<Form version="1.3" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
+<Form version="1.6" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="3"/>
     <Property name="alwaysOnTop" type="boolean" value="true"/>
@@ -29,12 +29,12 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="backgroundPanel" alignment="0" pref="1048" max="32767" attributes="0"/>
+          <Component id="backgroundPanel" alignment="0" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="backgroundPanel" alignment="0" pref="788" max="32767" attributes="0"/>
+          <Component id="backgroundPanel" alignment="0" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
   </Layout>
@@ -42,26 +42,60 @@
     <Container class="javax.swing.JPanel" name="backgroundPanel">
       <Properties>
         <Property name="opaque" type="boolean" value="false"/>
-        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection component="Form" name="getPreferredSize" type="method"/>
-        </Property>
       </Properties>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="skin.getBackground(this.getWidth(), this.getHeight())"/>
+        <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="javax.swing.InputMap im = backgroundPanel.getInputMap();&#xd;&#xa;javax.swing.ActionMap am = backgroundPanel.getActionMap();&#xd;&#xa;am.put(&quot;quit&quot;,&#xd;&#xa;new AbstractAction(){&#xd;&#xa;    @Override&#xd;&#xa;    public void actionPerformed(java.awt.event.ActionEvent evt) {&#xd;&#xa;        int i = JOptionPane.showConfirmDialog(mainWindow.this, &quot;&#x7d42;&#x4e86;&#x3057;&#x307e;&#x3059;&#x304b;&#xff1f;&quot;, &quot;Ubilab PaymentSystem&quot;, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);&#xd;&#xa;        if (i == JOptionPane.YES_OPTION) listener.quit();&#xd;&#xa;    }&#xd;&#xa;});&#xd;&#xa;im.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), &quot;quit&quot;);&#xd;&#xa;"/>
       </AuxValues>
 
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <EmptySpace min="0" pref="1048" max="32767" attributes="0"/>
+              <Group type="102" alignment="0" attributes="0">
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="buyListPanel" pref="1024" max="32767" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+              </Group>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
-              <EmptySpace min="0" pref="788" max="32767" attributes="0"/>
+              <Group type="102" alignment="1" attributes="0">
+                  <EmptySpace pref="535" max="32767" attributes="0"/>
+                  <Component id="buyListPanel" min="-2" pref="243" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+              </Group>
           </Group>
         </DimensionLayout>
       </Layout>
+      <SubComponents>
+        <Container class="javax.swing.JScrollPane" name="buyListPanel">
+          <AuxValues>
+            <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
+          </AuxValues>
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+          <SubComponents>
+            <Component class="javax.swing.JTable" name="buyList">
+              <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="MS UI Gothic" size="18" style="1"/>
+                </Property>
+                <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="new javax.swing.table.DefaultTableModel(&#xa;    new Object [][] {&#xa;        {&quot;0000000000000&quot;, &quot;&#x6c34;&quot;, &quot;100&quot;, &quot;2&quot;, &quot;200&quot;},&#xa;        {&quot;1111111111111&quot;, &quot;&#x304a;&#x8336;&quot;, &quot;120&quot;, &quot;1&quot;, &quot;120&quot;}&#xa;    },&#xa;    new String [] {&#xa;        &quot;JAN&quot;, &quot;&#x5546;&#x54c1;&#x540d;&quot;, &quot;&#x5358;&#x4fa1;&quot;, &quot;&#x500b;&#x6570;&quot;, &quot;&#x5c0f;&#x8a08;&quot;&#xa;    }&#xa;)" type="code"/>
+                </Property>
+                <Property name="rowHeight" type="int" value="20"/>
+                <Property name="selectionModel" type="javax.swing.ListSelectionModel" editor="org.netbeans.modules.form.editors2.JTableSelectionModelEditor">
+                  <JTableSelectionModel selectionMode="0"/>
+                </Property>
+              </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="setKeyAction(&quot;rowDel&quot;, KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0),&#xa;    new AbstractAction(){&#xa;        @Override&#xa;        public void actionPerformed(java.awt.event.ActionEvent evt) {&#xa;            JTable table = (JTable)evt.getSource();&#xa;            DefaultTableModel model = (DefaultTableModel)table.getModel();&#xa;&#xa;            int[] selections = table.getSelectedRows();&#xa;            for (int i = 0; i &lt; selections.length; i++) {&#xa;                selections[i] = table.convertRowIndexToModel(selections[i]);&#xa;            }&#xa;            java.util.Arrays.sort(selections);&#xa;            for (int i = selections.length - 1; i &gt;= 0; i--) {&#xa;                model.removeRow(selections[i]);&#xa;            }&#xa;        }&#xa;});&#xa;setKeyAction(&quot;incNum&quot;, KeyStroke.getKeyStroke(&apos;+&apos;),&#xa;    new AbstractAction(){&#xa;        @Override&#xa;        public void actionPerformed(java.awt.event.ActionEvent evt) {&#xa;            JTable table = (JTable)evt.getSource();&#xa;            DefaultTableModel model = (DefaultTableModel)table.getModel();&#xa;&#xa;            int[] selections = table.getSelectedRows();&#xa;            for (int i = 0; i &lt; selections.length; i++) {&#xa;                selections[i] = table.convertRowIndexToModel(selections[i]);&#xa;            }&#xa;            java.util.Arrays.sort(selections);&#xa;            for (int i = selections.length - 1; i &gt;= 0; i--) {&#xa;                //TODO: increment action&#xa;            }&#xa;        }&#xa;});&#xa;setKeyAction(&quot;decNum&quot;, KeyStroke.getKeyStroke(&apos;-&apos;),&#xa;    new AbstractAction(){&#xa;        @Override&#xa;        public void actionPerformed(java.awt.event.ActionEvent evt) {&#xa;            JTable table = (JTable)evt.getSource();&#xa;            DefaultTableModel model = (DefaultTableModel)table.getModel();&#xa;&#xa;            int[] selections = table.getSelectedRows();&#xa;            for (int i = 0; i &lt; selections.length; i++) {&#xa;                selections[i] = table.convertRowIndexToModel(selections[i]);&#xa;            }&#xa;            java.util.Arrays.sort(selections);&#xa;            for (int i = selections.length - 1; i &gt;= 0; i--) {&#xa;                //TODO: decrement action&#xa;            }&#xa;        }&#xa;});"/>
+              </AuxValues>
+            </Component>
+          </SubComponents>
+        </Container>
+      </SubComponents>
     </Container>
   </SubComponents>
 </Form>

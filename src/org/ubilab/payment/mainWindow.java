@@ -10,8 +10,17 @@
  */
 package org.ubilab.payment;
 
+import javax.swing.table.DefaultTableModel;
+import javax.swing.SwingUtilities;
+import javax.swing.JTable;
+import javax.swing.JComponent;
+import javax.swing.KeyStroke;
+import javax.swing.JOptionPane;
+import javax.swing.AbstractAction;
+import java.awt.event.KeyEvent;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import javax.swing.Action;
 import org.ubilab.payment.ui.skin.Skin;
 
 /**
@@ -20,6 +29,7 @@ import org.ubilab.payment.ui.skin.Skin;
  */
 public class mainWindow extends javax.swing.JFrame {
     private Skin skin;
+    private QuitEventListener listener;
 
     private static final Logger LOG;
     static {
@@ -43,6 +53,8 @@ public class mainWindow extends javax.swing.JFrame {
     private void initComponents() {
 
         backgroundPanel = skin.getBackground(this.getWidth(), this.getHeight());
+        buyListPanel = new javax.swing.JScrollPane();
+        buyList = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setAlwaysOnTop(true);
@@ -52,32 +64,113 @@ public class mainWindow extends javax.swing.JFrame {
         setUndecorated(true);
 
         backgroundPanel.setOpaque(false);
-        backgroundPanel.setPreferredSize(getPreferredSize());
+        javax.swing.InputMap im = backgroundPanel.getInputMap();
+        javax.swing.ActionMap am = backgroundPanel.getActionMap();
+        am.put("quit",
+            new AbstractAction(){
+                @Override
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    int i = JOptionPane.showConfirmDialog(mainWindow.this, "終了しますか？", "Ubilab PaymentSystem", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                    if (i == JOptionPane.YES_OPTION) listener.quit();
+                }
+            });
+            im.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "quit");
 
-        javax.swing.GroupLayout backgroundPanelLayout = new javax.swing.GroupLayout(backgroundPanel);
-        backgroundPanel.setLayout(backgroundPanelLayout);
-        backgroundPanelLayout.setHorizontalGroup(
-            backgroundPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1048, Short.MAX_VALUE)
-        );
-        backgroundPanelLayout.setVerticalGroup(
-            backgroundPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 788, Short.MAX_VALUE)
-        );
+            buyList.setFont(new java.awt.Font("MS UI Gothic", 1, 18)); // NOI18N
+            buyList.setModel(new javax.swing.table.DefaultTableModel(
+                new Object [][] {
+                    {"0000000000000", "水", "100", "2", "200"},
+                    {"1111111111111", "お茶", "120", "1", "120"}
+                },
+                new String [] {
+                    "JAN", "商品名", "単価", "個数", "小計"
+                }
+            ));
+            buyList.setRowHeight(20);
+            buyList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+            setKeyAction("rowDel", KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0),
+                new AbstractAction(){
+                    @Override
+                    public void actionPerformed(java.awt.event.ActionEvent evt) {
+                        JTable table = (JTable)evt.getSource();
+                        DefaultTableModel model = (DefaultTableModel)table.getModel();
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(backgroundPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 1048, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(backgroundPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 788, Short.MAX_VALUE)
-        );
+                        int[] selections = table.getSelectedRows();
+                        for (int i = 0; i < selections.length; i++) {
+                            selections[i] = table.convertRowIndexToModel(selections[i]);
+                        }
+                        java.util.Arrays.sort(selections);
+                        for (int i = selections.length - 1; i >= 0; i--) {
+                            model.removeRow(selections[i]);
+                        }
+                    }
+                });
+                setKeyAction("incNum", KeyStroke.getKeyStroke('+'),
+                    new AbstractAction(){
+                        @Override
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                            JTable table = (JTable)evt.getSource();
+                            DefaultTableModel model = (DefaultTableModel)table.getModel();
 
-        pack();
-    }// </editor-fold>//GEN-END:initComponents
+                            int[] selections = table.getSelectedRows();
+                            for (int i = 0; i < selections.length; i++) {
+                                selections[i] = table.convertRowIndexToModel(selections[i]);
+                            }
+                            java.util.Arrays.sort(selections);
+                            for (int i = selections.length - 1; i >= 0; i--) {
+                                //TODO: increment action
+                            }
+                        }
+                    });
+                    setKeyAction("decNum", KeyStroke.getKeyStroke('-'),
+                        new AbstractAction(){
+                            @Override
+                            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                JTable table = (JTable)evt.getSource();
+                                DefaultTableModel model = (DefaultTableModel)table.getModel();
+
+                                int[] selections = table.getSelectedRows();
+                                for (int i = 0; i < selections.length; i++) {
+                                    selections[i] = table.convertRowIndexToModel(selections[i]);
+                                }
+                                java.util.Arrays.sort(selections);
+                                for (int i = selections.length - 1; i >= 0; i--) {
+                                    //TODO: decrement action
+                                }
+                            }
+                        });
+                        buyListPanel.setViewportView(buyList);
+
+                        javax.swing.GroupLayout backgroundPanelLayout = new javax.swing.GroupLayout(backgroundPanel);
+                        backgroundPanel.setLayout(backgroundPanelLayout);
+                        backgroundPanelLayout.setHorizontalGroup(
+                            backgroundPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(backgroundPanelLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(buyListPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 1024, Short.MAX_VALUE)
+                                .addContainerGap())
+                        );
+                        backgroundPanelLayout.setVerticalGroup(
+                            backgroundPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, backgroundPanelLayout.createSequentialGroup()
+                                .addContainerGap(535, Short.MAX_VALUE)
+                                .addComponent(buyListPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 243, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap())
+                        );
+
+                        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+                        getContentPane().setLayout(layout);
+                        layout.setHorizontalGroup(
+                            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(backgroundPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        );
+                        layout.setVerticalGroup(
+                            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(backgroundPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        );
+
+                        pack();
+                    }// </editor-fold>//GEN-END:initComponents
 
     public void setSkin(String skinFQCN) {
         try {
@@ -94,11 +187,29 @@ public class mainWindow extends javax.swing.JFrame {
         this.repaint();
     }
 
+    public void setQuitEventListener(QuitEventListener qel) {
+        listener = qel;
+    }
+
     @Override
     public void repaint() {
         backgroundPanel = skin.getBackground(this.getWidth(), this.getHeight());
         backgroundPanel.setOpaque(true);
         super.repaint();
+    }
+
+    private void setKeyAction(String name, KeyStroke key, javax.swing.Action a) {
+        javax.swing.InputMap im;
+
+        im = buyList.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        im.put(key, name);
+        im = buyList.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        im.put(key, name);
+        im = buyList.getInputMap(JComponent.WHEN_FOCUSED);
+        im.put(key, name);
+
+        javax.swing.ActionMap am = buyList.getActionMap();
+        am.put(name, a);
     }
 
     /**
@@ -138,5 +249,7 @@ public class mainWindow extends javax.swing.JFrame {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel backgroundPanel;
+    private javax.swing.JTable buyList;
+    private javax.swing.JScrollPane buyListPanel;
     // End of variables declaration//GEN-END:variables
 }
